@@ -156,4 +156,52 @@ php artisan migrate
 php artisan make:middleware UserAccess
 ```
 
-After creating a middleware go-to app/Http/middleware. Implement the logic here for checking a logged in users. Update the code in this handle function.
+After creating a middleware go-to `app/Http/middleware`. Implement the logic here for checking a logged in users. Update the code in this handle function.
+
+```
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+
+class UserAccess
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
+     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     */
+    public function handle(Request $request, Closure $next, $userType)
+    {
+        if(auth()->user()->type == $userType){
+            return $next($request);
+        }
+
+        return response()->json(['You do not have permission to access for this page.']);
+        /* return response()->view('errors.check-permission'); */
+    }
+}
+```
+
+-   Then register this middleware in the `app/Http/Kernel.php`. So, open kernal.php and add the following `$middlewareAliases` property in it:
+
+```
+protected $middlewareAliases = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'precognitive' => \Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests::class,
+        'signed' => \App\Http\Middleware\ValidateSignature::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'user-access' => \App\Http\Middleware\UserAccess::class, //បញ្ចូល user-access
+    ];
+```
