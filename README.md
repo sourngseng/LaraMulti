@@ -136,6 +136,24 @@ php artisan migrate
 -   Then install laravel 9 UI in your project using the below command:
 
 ```
-    - composer require laravel/ui
-    - php artisan ui bootstrap --auth
+   composer require laravel/ui
 ```
+
+```
+   php artisan ui bootstrap --auth
+```
+
+-   Then execute the following commands:
+
+```
+    npm install
+    npm run dev
+```
+
+## Step 4: Create Middleware and Setting up
+
+```
+php artisan make:middleware UserAccess
+```
+
+After creating a middleware go-to app/Http/middleware. Implement the logic here for checking a logged in users. Update the code in this handle function.
