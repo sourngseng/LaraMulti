@@ -126,3 +126,16 @@ class User extends Authenticatable
     }
 }
 ```
+
+-   Now, add is_admin filed after that will use the below command for creating this field into the database.
+
+```
+php artisan migrate
+```
+
+-   Then install laravel 9 UI in your project using the below command:
+
+```
+    - composer require laravel/ui
+    - php artisan ui bootstrap --auth
+```
