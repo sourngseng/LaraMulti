@@ -38,3 +38,8 @@ Route::middleware(['auth','user-access:admin'])->group(function(){
 Route::middleware(['auth','user-access:manager'])->group(function(){
     Route::get('/manager/home',[HomeController::class,'managerHome'])->name('manager.home');
 });
+
+
+Route::get('auth-test',function(){
+    return view('layouts.auth_app');
+});
