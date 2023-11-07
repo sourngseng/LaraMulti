@@ -158,7 +158,7 @@ php artisan make:middleware UserAccess
 
 After creating a middleware go-to `app/Http/middleware`. Implement the logic here for checking a logged in users. Update the code in this handle function.
 
-```
+```php
 <?php
 
 namespace App\Http\Middleware;
@@ -189,7 +189,7 @@ class UserAccess
 
 -   Then register this middleware in the `app/Http/Kernel.php`. So, open kernal.php and add the following `$middlewareAliases` property in it:
 
-```
+```php
 protected $middlewareAliases = [
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
@@ -205,3 +205,90 @@ protected $middlewareAliases = [
         'user-access' => \App\Http\Middleware\UserAccess::class, //បញ្ចូល user-access
     ];
 ```
+
+## Step 5: Define Route
+
+-   Create routes and add it on web.php file as like below.
+-   Open `routes/web.php` file
+
+```php
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+// All Normal Users Routes List
+Route::middleware(['auth','user-access:user'])->group(function(){
+    Route::get('/home',[HomeController::class,'index'])->name('home');
+});
+
+// All Admin Users Route List
+Route::middleware(['auth','user-access:admin'])->group(function(){
+    Route::get('/admin/home',[HomeController::class,'adminHome'])->name('admin.home');
+});
+
+// All Manager Route List
+
+Route::middleware(['auth','user-access:manager'])->group(function(){
+    Route::get('/manager/home',[HomeController::class,'managerHome'])->name('manager.home');
+});
+
+```
+
+## Step 6: Create Methods in Controller
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class HomeController extends Controller
+{
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function index()
+    {
+        return view('home');
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function adminHome()
+    {
+        return view('adminHome');
+    }
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function managerHome()
+    {
+        return view('managerHome');
+    }
+}
+```
+
+## Step 7: Create Blade View
+
+Now, create two blade view files first is display home page and second is display after login.
+
+Open the `resources/views/home.blade`. file and update the below code.
